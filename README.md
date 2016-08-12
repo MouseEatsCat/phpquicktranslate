@@ -22,7 +22,7 @@ If the url is `http://website.com/page.php?lang=fr`
 ```
 French Text
 ```
-<a href="https://micheldescoteaux.com/phpquicktranslate/demo.php" target="_blank">Click Here</a> to see a demo
+[Click Here](https://micheldescoteaux.com/phpquicktranslate/demo.php) to see a demo
 
 ## How to Set Up
 This script can be set up by using the following steps:

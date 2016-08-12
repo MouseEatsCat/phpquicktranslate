@@ -1,17 +1,20 @@
 <?php
-/*
-* PHP Quick Translate
-* Author: Michel Descoteaux (https://micheldescoteaux.com)
-* GitHub: https://github.com/MouseEatsCat/phpquicktranslate
+/**
+PHP Quick Translate
+Author: Michel Descoteaux (https://micheldescoteaux.com)
+GitHub: https://github.com/MouseEatsCat/phpquicktranslate
 */
 
 if(!function_exists('_t')){
 	function _t($string){
 
+		$numOfLanguages = substr_count($string, '[:');
+
 		// Set the Default Language
-		if(strpos($string, '[:') !== false){
+		if($numOfLanguages > 0){
 			// Find the first instance of a language section in the string
-			$defaultLang = substr($string, (strpos($string, '[:') + 2), (strpos($string, ']') - (strpos($string, '[:') + 2)));
+			$tagstart = strpos($string, '[:') + 2;
+			$defaultLang = substr($string, $tagstart, strpos($string, ']') - $tagstart);
 		}else{
 			// Language was not present in string
 			return $string;
@@ -37,9 +40,9 @@ if(!function_exists('_t')){
 		}
 	}
 }
-/*
-* ADDITIONAL FUNCTION
-* Run the quick translate function and then echo the result
+/**
+ADDITIONAL FUNCTION
+Run the quick translate function and then echo the result
 */
 if(!function_exists('_et')){
 	function _et($string){

@@ -30,6 +30,8 @@
 	<body>
 		<main>
 			<h1>PHP Quick Translate Function Demo</h1>
+			<a href="?lang=en">Click Here</a> to view the page in English<br>
+			<a href="?lang=es">Click Here</a> to view the page in Spanish
 			<!-- HERE is the code you'll need to use -->
 			<!-- You can do it this way... -->
 			<h2>Example 1</h2>

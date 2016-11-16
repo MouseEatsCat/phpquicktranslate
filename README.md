@@ -33,4 +33,4 @@ This script can be set up by using the following steps:
 
 3. The script will detect the language based on the "**lang**" `$_GET` parameter. So your url should look like this: `http://website.com/page.php?lang=en` (if no `lang` parameter is specified then the script will look for the first `[:]` section in the string and use that as the default)
 
-4. Then in your php code if your run this function `<?php _et('[:en]Hola[:fr]Senior'); ?>`, the function will echo: `Hola`
+4. Then in your php code if you run this function `<?php _et('[:en]Hola[:fr]Senior'); ?>`, the function will echo: `Hola`

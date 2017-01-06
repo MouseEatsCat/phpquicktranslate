@@ -13,12 +13,8 @@ if (!function_exists('_t')) {
 		global $useFirstString;
 		global $globalDefaultLang;
 
-		$getLang = $langParam;
-
-		$numOfLanguages = substr_count($string, '[:');
-
 		// Set the Default Language
-		if ($numOfLanguages > 0) {
+		if (substr_count($string, '[:') > 0) {
 			// Find the first instance of a language section in the string
 			$tagstart = strpos($string, '[:') + 2;
 			$defaultLang = substr($string, $tagstart, strpos($string, ']') - $tagstart);
@@ -28,16 +24,16 @@ if (!function_exists('_t')) {
 		}
 
 		// Check to see if the "lang" GET parameter is set and is present in the string
-		if (!empty($getLang) && strpos($string, '[:'. $getLang .']') !== false) {
-			$defaultLang = $getLang;
+		if (!empty($langParam) && strpos($string, '[:'. $langParam .']') !== false) {
+			$defaultLang = $langParam;
 		} elseif (!empty($globalDefaultLang)) {
 			$defaultLang = $globalDefaultLang;
 			if ($useFirstString == false) {
-				$defaultLang = $getLang;
+				$defaultLang = $langParam;
 			}
 		} else {
 			if ($useFirstString == false) {
-				$defaultLang = $getLang;
+				$defaultLang = $langParam;
 			}
 		}
 		// CHECKING THE STRING
@@ -62,6 +58,6 @@ Run the quick translate function and then echo the result
 */
 if (!function_exists('_et')) {
 	function _et($string){
-	  echo _t($string);
+		echo _t($string);
 	}
 }

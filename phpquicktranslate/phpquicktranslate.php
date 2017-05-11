@@ -9,9 +9,10 @@ include_once("config.php");
 
 if (!function_exists('_t')) {
 	function _t($string){
-		global $langParam;
-		global $useFirstString;
-		global $globalDefaultLang;
+		global $phpQTranslateOptions;
+		$langParam = $phpQTranslateOptions["langParam"];
+		$useFirstString = $phpQTranslateOptions["useFirstString"];
+		$globalDefaultLang = $phpQTranslateOptions["globalDefaultLang"];
 
 		// Set the Default Language
 		if (substr_count($string, '[:') > 0) {
@@ -31,11 +32,10 @@ if (!function_exists('_t')) {
 			if ($useFirstString == false) {
 				$defaultLang = $langParam;
 			}
-		} else {
-			if ($useFirstString == false) {
-				$defaultLang = $langParam;
-			}
+		} elseif ($useFirstString == false) {
+			$defaultLang = $langParam;
 		}
+
 		// CHECKING THE STRING
 		if (strpos($string, '[:'. $defaultLang .']') !== false) {
 			$tmpString = substr($string, (strpos($string, '[:'. $defaultLang .']') + strlen($defaultLang) + 3));
@@ -50,8 +50,10 @@ if (!function_exists('_t')) {
 			// Language was not present in string
 			return $useFirstString == true ? $string : "";
 		}
+
 	}
 }
+
 /**
 ADDITIONAL FUNCTION
 Run the quick translate function and then echo the result

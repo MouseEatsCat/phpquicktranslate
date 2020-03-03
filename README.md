@@ -8,13 +8,16 @@ This script was developed as a personal project by [Michel Descoteaux](https://m
 
 ```php
 <?php
-	include_once('phpquicktranslate/phpquicktranslate.php');
-	_et('[:en]English Text[:fr]French Text');
-	// OR
-	echo _t('[:en]English Text[:fr]French Text');
-?>
+require_once __DIR__ . '/vendor/autoload.php';
+
+$lang = !empty($_GET["lang"]) ? $_GET["lang"]: "";
+$qt = new MouseEatsCat\PhpQuickTranslate($lang);
+
+echo $qt->t('[:en]English Text[:fr]French Text');
+// OR
+$qt->et('[:en]English Text[:fr]French Text');
 ```
-If the url is `http://website.com/page.php?lang=en`
+If the url is `http://website.com/page.php?lang=en` OR `http://website.com/page.php`
 ```
 English Text
 ```
@@ -24,13 +27,28 @@ French Text
 ```
 [Click Here](https://micheldescoteaux.com/phpquicktranslate/demo.php) to see a demo
 
-## How to Set Up
+## Basic Set Up
 This script can be set up by using the following steps:
 
-1. Save the `phpquicktranslate` folder into your web directory
+1. Run `composer require mouseeatscat/phpquicktranslate`
 
-2. Add this code to the top of your php document: `<?php include_once('phpquicktranslate/phpquicktranslate.php'); ?>`
+2. Add this code to the top of your php document:
+```php
+<?php
+require_once __DIR__ . '/vendor/autoload.php';
 
-3. The script will detect the language based on the "**lang**" `$_GET` parameter. So your url should look similar to this: `http://website.com/page.php?lang=en` (if no `lang` parameter is specified then the script will look for the first `[:]` section in the string and use that as the default)
+$qt = new MouseEatsCat\PhpQuickTranslate("en");
+```
 
-4. Then in your php code, if you run this function: `<?php _et('[:en]Hola[:fr]Senior'); ?>`, the function will echo: `Hola`
+3. Then use either `$qt->t()` or `$qt->et()` to translate a given string (example):
+```php
+echo $qt->t('[:en]Hello world[:fr]Bonjour monde');
+// The output is: "Hello world"
+```
+
+4. You can then change the language at any time using `$qt->changeLanguage()` (example):
+```php
+$qt->changeLanguage('fr');
+echo $qt->t('[:en]Hello world[:fr]Bonjour monde');
+// The output is: "Bonjour monde"
+```

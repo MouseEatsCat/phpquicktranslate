@@ -1,5 +1,5 @@
 # PHP Quick Translate
-[![Packagist](https://img.shields.io/packagist/v/mouseeatscat/phpquicktranslate.svg?style=flat-square)](https://packagist.org/packages/roots/bedrock)
+[![Packagist](https://img.shields.io/packagist/v/mouseeatscat/phpquicktranslate.svg?style=flat-square)](https://packagist.org/packages/mouseeatscat/phpquicktranslate)
 
 A class for quickly providing multiple translations in PHP.
 

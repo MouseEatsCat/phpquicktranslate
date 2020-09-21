@@ -7,7 +7,7 @@ This script was developed as a personal project by [Michel Descoteaux](https://m
 
 ## Requirements
 
-* PHP >= 5.6
+* PHP >= 5.3.5
 * Composer - [Install](https://getcomposer.org/download/)
 
 ## Examples

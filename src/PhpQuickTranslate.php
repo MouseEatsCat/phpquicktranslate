@@ -19,12 +19,12 @@ class PhpQuickTranslate
      * @param string  $lang           Current Language
      * @param boolean $useFirstString If no match is found, use first available translation
      */
-    public function __construct(string $lang, $useFirstString = true)
+    public function __construct($lang, $useFirstString = true)
     {
-        $this->lang = empty($lang) ? "en" : $lang;
+        $this->lang = !empty($lang) ? $lang : "en";
         $this->useFirstString = $useFirstString;
     }
-    
+
     /**
      * Translate string
      *

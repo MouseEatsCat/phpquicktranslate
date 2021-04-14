@@ -1,8 +1,11 @@
 <?php
-require_once __DIR__ . '/src/PhpQuickTranslate.php';
+
 use MouseEatsCat\PhpQuickTranslate;
 
+require_once __DIR__ . '/src/PhpQuickTranslate.php';
+
 $qt = new PhpQuickTranslate($_GET["lang"]);
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -37,18 +40,28 @@ $qt = new PhpQuickTranslate($_GET["lang"]);
         <h1>PHP Quick Translate Function Demo</h1>
         <a href="?lang=en">Click Here</a> to view the page in English (en)<br>
         <a href="?lang=es">Click Here</a> to view the page in Spanish (es)
+
+        <!-- Example 1 -->
         <h2>Example 1</h2>
-        <pre><?php echo '$qt->et(\'[:en]English[:es]Español\');'; ?></pre>
+        <pre><?php echo '$qt->et([\'en\' => \'English\', \'es\' => \'Español\']);'; ?></pre>
         <br>
         <span style="color:#F00">Result:</span>
-        <?php $qt->et('[:en]English[:es]Español'); ?>
+        <?php $qt->et([
+            'en' => 'English',
+            'es' => 'Español'
+        ]); ?>
+
+        <!-- Example 2 -->
         <h2>Example 2</h2>
-        <pre><?php echo '$test = $qt->t(\'[:en]English[:es]Español\');
+        <pre><?php echo '$test = $qt->t([\'en\' => \'English\', \'es\' => \'Español\']);
 echo "This text is prepended to: ".$test;';
         ?></pre>
         <br>
         <span style="color:#F00">Result:</span>
-        <?php echo 'This text is prepended to: ' . $qt->t('[:en]English[:es]Español'); ?>
+        <?php echo 'This text is prepended to: ' . $qt->t([
+            'en' => 'English',
+            'es' => 'Español'
+        ]); ?>
     </main>
 </body>
 <html>

@@ -14,13 +14,24 @@ This script was developed as a personal project by [Michel Descoteaux](https://m
 
 ```php
 <?php
+
 require_once __DIR__ . '/vendor/autoload.php';
 
-$lang = !empty($_GET["lang"]) ? $_GET["lang"]: "";
+$lang = !empty($_GET['lang']) ? $_GET['lang']: 'en';
 $qt = new MouseEatsCat\PhpQuickTranslate($lang);
 
-echo $qt->t('[:en]English Text[:fr]French Text');
+echo $qt->t([
+  'en' => 'English Test',
+  'fr' => 'French Text'
+]);
+
 // OR
+$qt->et([
+  'en' => 'English Test',
+  'fr' => 'French Text'
+]);
+
+// OR Alternative
 $qt->et('[:en]English Text[:fr]French Text');
 ```
 If the url is `http://website.com/page.php?lang=en` OR `http://website.com/page.php`
@@ -41,20 +52,28 @@ This script can be set up by using the following steps:
 2. Add this code to the top of your php document:
   ```php
   <?php
+
   require_once __DIR__ . '/vendor/autoload.php';
 
-  $qt = new MouseEatsCat\PhpQuickTranslate("en");
+  $qt = new MouseEatsCat\PhpQuickTranslate('en');
   ```
 
 3. Then use either `$qt->t()` or `$qt->et()` to translate a given string (example):
   ```php
-  echo $qt->t('[:en]Hello world[:fr]Bonjour monde');
+  echo $qt->t([
+    'en' => 'Hello world',
+    'fr' => 'Bonjour monde'
+  ]);
   // The output is: "Hello world"
   ```
 
 4. You can then change the language at any time using `$qt->changeLanguage()` (example):
   ```php
   $qt->changeLanguage('fr');
-  echo $qt->t('[:en]Hello world[:fr]Bonjour monde');
+
+  echo $qt->t([
+    'en' => 'Hello world',
+    'fr' => 'Bonjour monde'
+  ]);
   // The output is: "Bonjour monde"
   ```

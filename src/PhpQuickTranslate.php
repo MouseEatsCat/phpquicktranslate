@@ -19,7 +19,7 @@ class PhpQuickTranslate
      * @param string  $lang           Current Language
      * @param boolean $useFirstString If no match is found, use first available translation
      */
-    public function __construct($lang, $useFirstString = true)
+    public function __construct($lang = "en", $useFirstString = true)
     {
         $this->lang = !empty($lang) ? $lang : "en";
         $this->useFirstString = $useFirstString;
@@ -28,15 +28,17 @@ class PhpQuickTranslate
     /**
      * Translate string
      *
-     * @param string $string String you want to translate
+     * @param string|array $translations String(s) you want to translate
      * @return string
      */
-    public function t($string)
+    public function t($translations)
     {
-        $translations = $this->getTranslations($string);
+        if (!is_array($translations)) {
+            $translations = $this->getTranslations($translations);
+        }
 
         if (empty($translations)) {
-            return $string;
+            return $translations;
         }
 
         // Check to see if the current lang is set and is present in the string
@@ -45,11 +47,13 @@ class PhpQuickTranslate
         } elseif ($this->useFirstString) {
             return reset($translations);
         }
-        return $string;
+
+        return $translations;
     }
 
     /**
      * Get translations from string
+     * Example: '[:en]English Text[:es]Texto en español'
      *
      * @param string $string
      * @return array|string
@@ -57,28 +61,33 @@ class PhpQuickTranslate
     private function getTranslations($string)
     {
         $translations = [];
+
         preg_match_all('/\[:(\w+)\]([^\[]*)/m', $string, $matches);
+
         if (count($matches) == 3) {
             foreach ($matches[1] as $index => $match) {
                 if (!empty($matches[2][$index])) {
                     $translations[$match] = $matches[2][$index];
                 }
             }
-        } else {
-            return $string;
         }
+
+        if (empty($translations)) {
+            array_push($translations, $string);
+        }
+
         return $translations;
     }
 
     /**
      * Translate and echo
      *
-     * @param string $string String you want to translate
+     * @param string|array $translations String(s) you want to translate
      * @return $this
      */
-    public function et($string)
+    public function et($translations)
     {
-        echo $this->t($string);
+        echo $this->t($translations);
         return $this;
     }
 
@@ -88,7 +97,7 @@ class PhpQuickTranslate
      * @param string $lang
      * @return $this
      */
-    public function changeLanguage($lang)
+    public function setLang($lang)
     {
         $this->lang = $lang;
         return $this;

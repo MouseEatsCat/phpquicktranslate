@@ -36,3 +36,6 @@ jobs:
 
     - name: PHPUnit
       run: composer run test
+
+    - name: PHP Code Sniffer
+      run: composer run sniff

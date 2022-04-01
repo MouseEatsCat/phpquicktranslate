@@ -44,7 +44,9 @@ class PhpQuickTranslate
         // Check to see if the current lang is set and is present in the string
         if (!empty($this->lang) && !empty($translations[$this->lang])) {
             return $translations[$this->lang];
-        } elseif ($this->useFirstString) {
+        }
+
+        if ($this->useFirstString) {
             return reset($translations);
         }
 
@@ -56,15 +58,15 @@ class PhpQuickTranslate
      * Example: '[:en]English Text[:es]Texto en español'
      *
      * @param string $string
-     * @return array|string
+     * @return array
      */
     private function getTranslations($string)
     {
         $translations = [];
 
-        preg_match_all('/\[:(\w+)\]([^\[]*)/m', $string, $matches);
+        preg_match_all('/\[:(\w+)]([^\[]*)/m', $string, $matches);
 
-        if (count($matches) == 3) {
+        if (count($matches) === 3) {
             foreach ($matches[1] as $index => $match) {
                 if (!empty($matches[2][$index])) {
                     $translations[$match] = $matches[2][$index];
@@ -73,7 +75,7 @@ class PhpQuickTranslate
         }
 
         if (empty($translations)) {
-            array_push($translations, $string);
+            $translations[] = $string;
         }
 
         return $translations;

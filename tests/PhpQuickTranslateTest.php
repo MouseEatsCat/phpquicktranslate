@@ -8,7 +8,7 @@ class PhpQuickTranslateTest extends TestCase
 {
     private $qt;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->qt = new PhpQuickTranslate();
     }
@@ -44,7 +44,7 @@ class PhpQuickTranslateTest extends TestCase
 
     public function testTranslationMultiple()
     {
-        // Should retrun en
+        // Should return en
         $this->assertEquals('Hello', $this->qt->t('[:es]Hola[:en]Hello[:fr]Bonjour'));
         $this->assertEquals('Hello', $this->qt->t([
             'es' => 'Hola',

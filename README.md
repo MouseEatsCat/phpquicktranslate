@@ -29,10 +29,12 @@ This script was developed as a personal project by [Michel Descoteaux](https://m
 You can optionally add a [mulilingal](#single-language-json-example) JSON translation file or multiple [single-language](#single-language-json-example) files.
 ```php
 // Single-Language JSON files
-$qt->addTranslations('/translations/en.json', 'en');
-$qt->addTranslations('/translations/fr.json', 'fr');
+$qt->addTranslationSource('/translations/en.json', 'en');
+$qt->addTranslationSource('/translations/fr.json', 'fr');
 // OR Multilingual JSON file
-$qt->addTranslations('/translations/multilingual.json');
+$qt->addTranslationSource('/translations/multilingual.json');
+// OR Path to translations directory
+$qt->addTranslationSource('/translations/');
 ```
 You can then load a translation by it's key:
 ```php
@@ -99,11 +101,15 @@ $qt->getLang();
 // Add a translation
 $qt->addTranslation('lang', 'translation_key', 'translation_value');
 
-// Add a JSON translation file path or an array of translations.
-// By JSON file path (single language + multilingual)
-$qt->addTranslations('path/to/json/lang.json', 'lang');
-$qt->addTranslations('path/to/json/multilingual.json');
-// OR array (single language + multilingual)
+// Add a JSON translation source file directory
+// translation source file directory
+$qt->addTranslationSource('path/to/json/translations/');
+// Individual translation source file
+$qt->addTranslationSource('path/to/json/translations/lang.json', 'lang');
+$qt->addTranslationSource('path/to/json/translations/multilingual.json');
+
+// Add array or translations
+// (single language + multilingual)
 $qt->addTranslations(['translation_key' => 'translation_value'], 'lang');
 $qt->addTranslations([
   'translation_key' => [

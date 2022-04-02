@@ -9,6 +9,8 @@ GitHub: https://github.com/MouseEatsCat/phpquicktranslate
 namespace MouseEatsCat;
 
 use InvalidArgumentException;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 class PhpQuickTranslate
 {
@@ -142,39 +144,75 @@ class PhpQuickTranslate
     }
 
     /**
-     * Add multiple translations.
+     * Add translation JSON source file or directory.
      *
-     * @param string|array $translations Path to JSON file containing translations OR array of translations
-     * @param string|null $lang          Language of translations
-     *                                   (Only required if translations don't contain language codes)
+     * @param string      $source   Path to JSON file containing translations OR directory
+     * @param string|null $lang     Language of translations
+     *                              (Only required if translations don't contain language codes)
      * @return $this
      *
      * @see https://github.com/MouseEatsCat/phpquicktranslate#single-language-json Single language json example.
      * @see https://github.com/MouseEatsCat/phpquicktranslate#multilingual-json Multilingual json example.
      */
-    public function addTranslations($translations, string $lang = null)
+    public function addTranslationSource(string $source, string $lang = null)
     {
-        try {
-            // $translations is a json file
-            if (is_string($translations)) {
-                if ($this::strEndsWith($translations, '.json') && file_exists($translations)) {
-                    $translationsPath = $translations;
-                    $translations = json_decode(file_get_contents($translationsPath), JSON_OBJECT_AS_ARRAY);
+        $sources = [];
 
-                    if (!$translations) {
-                        throw new InvalidArgumentException(sprintf(
-                            'Invalid JSON in: "%s"',
-                            $translationsPath
-                        ));
+        try {
+            if (is_dir($source)) {
+                $it = new RecursiveDirectoryIterator($source);
+
+                foreach (new RecursiveIteratorIterator($it) as $file) {
+                    if ($file->getExtension() == 'json') {
+                        $sources[] = [
+                            'file' => $file->getRealPath(),
+                            'lang' => $lang ?? $file->getBasename('.json')
+                        ];
                     }
+                }
+            } elseif ($this::strEndsWith($source, '.json') && file_exists($source)) {
+                $sources = [[
+                    'file' => $source,
+                    'lang' => $lang
+                ]];
+            } else {
+                throw new InvalidArgumentException(sprintf(
+                    'Could not find translation JSON file or directory: "%s"',
+                    $source
+                ));
+            }
+
+            foreach ($sources as $src) {
+                $file = $src['file'];
+                $lang = strtolower($src['lang']);
+                $translations = json_decode(file_get_contents($file), JSON_OBJECT_AS_ARRAY);
+
+                if ($translations) {
+                    $this->addTranslations($translations, $lang);
                 } else {
                     throw new InvalidArgumentException(sprintf(
-                        'Could not find translation JSON file: "%s"',
-                        $translations
+                        'Invalid JSON in: "%s"',
+                        $file
                     ));
                 }
             }
+        } catch (InvalidArgumentException $e) {
+            $message = 'Failed to add translation source: ' . $e->getMessage();
+            trigger_error($message, E_USER_WARNING);
+        }
+    }
 
+    /**
+     * Add multiple translations.
+     *
+     * @param array       $translations  Array of translations to add
+     * @param string|null $lang          Language of translations
+     *                                   (Only required if translations don't contain language codes)
+     * @return $this
+     */
+    public function addTranslations(array $translations, string $lang = null)
+    {
+        try {
             foreach ($translations as $translationKey => $translationVal) {
                 if (empty($lang)) {
                     // Assume each translation is an array of [lang => value]

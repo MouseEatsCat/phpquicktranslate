@@ -8,18 +8,26 @@ GitHub: https://github.com/MouseEatsCat/phpquicktranslate
 
 namespace MouseEatsCat;
 
+use InvalidArgumentException;
+
 class PhpQuickTranslate
 {
-    public $lang;
-    public $useFirstString;
+    /** @var string */
+    protected $lang;
+
+    /** @var bool */
+    protected $useFirstString;
+
+    /** @var array */
+    protected $translations = [];
 
     /**
      * Initialize PhpQuickTranslate
      *
      * @param string  $lang           Current Language
-     * @param boolean $useFirstString If no match is found, use first available translation
+     * @param bool    $useFirstString If no match is found, use first available translation
      */
-    public function __construct($lang = "en", $useFirstString = true)
+    public function __construct(string $lang = "en", bool $useFirstString = true)
     {
         $this->lang = !empty($lang) ? $lang : "en";
         $this->useFirstString = $useFirstString;
@@ -33,8 +41,12 @@ class PhpQuickTranslate
      */
     public function t($translations)
     {
-        if (!is_array($translations)) {
-            $translations = $this->getTranslations($translations);
+        if (is_string($translations)) {
+            if ($this->hasTranslation($translations)) {
+                return $this->getTranslation($translations);
+            }
+
+            $translations = $this->parseSubstringTranslations($translations);
         }
 
         if (empty($translations)) {
@@ -60,7 +72,7 @@ class PhpQuickTranslate
      * @param string $string
      * @return array
      */
-    private function getTranslations($string)
+    private function parseSubstringTranslations(string $string)
     {
         $translations = [];
 
@@ -99,9 +111,136 @@ class PhpQuickTranslate
      * @param string $lang
      * @return $this
      */
-    public function setLang($lang)
+    public function setLang(string $lang)
     {
         $this->lang = $lang;
         return $this;
+    }
+
+    /**
+     * Get current language
+     *
+     * @return string
+     */
+    public function getLang()
+    {
+        return $this->lang;
+    }
+
+    /**
+     * Add a translation.
+     *
+     * @param string $lang Language of the translation.
+     * @param string $key Translation key.
+     * @param string|null $value Translation value.
+     * @return $this
+     */
+    public function addTranslation(string $lang, string $key, string $value = null)
+    {
+        $this->translations[$key][$lang] = $value ?? $key;
+        return $this;
+    }
+
+    /**
+     * Add multiple translations.
+     *
+     * @param string|array $translations Path to JSON file containing translations OR array of translations
+     * @param string|null $lang          Language of translations
+     *                                   (Only required if translations don't contain language codes)
+     * @return $this
+     *
+     * @see https://github.com/MouseEatsCat/phpquicktranslate#single-language-json Single language json example.
+     * @see https://github.com/MouseEatsCat/phpquicktranslate#multilingual-json Multilingual json example.
+     */
+    public function addTranslations($translations, string $lang = null)
+    {
+        try {
+            // $translations is a json file
+            if (is_string($translations)) {
+                if ($this::strEndsWith($translations, '.json') && file_exists($translations)) {
+                    $translationsPath = $translations;
+                    $translations = json_decode(file_get_contents($translationsPath), JSON_OBJECT_AS_ARRAY);
+
+                    if (!$translations) {
+                        throw new InvalidArgumentException(sprintf(
+                            'Invalid JSON in: "%s"',
+                            $translationsPath
+                        ));
+                    }
+                } else {
+                    throw new InvalidArgumentException(sprintf(
+                        'Could not find translation JSON file: "%s"',
+                        $translations
+                    ));
+                }
+            }
+
+            foreach ($translations as $translationKey => $translationVal) {
+                if (empty($lang)) {
+                    // Assume each translation is an array of [lang => value]
+                    if (!is_array($translationVal)) {
+                        throw new InvalidArgumentException(sprintf(
+                            'Missing translations for translation: "%s"',
+                            $translationKey
+                        ));
+                    }
+                    foreach ($translationVal as $langKey => $value) {
+                        $this->addTranslation($langKey, $translationKey, $value);
+                    }
+                } else {
+                    $this->addTranslation($lang, $translationKey, $translationVal);
+                }
+            }
+        } catch (InvalidArgumentException $e) {
+            $message = 'Failed to add translations: ' . $e->getMessage();
+            trigger_error($message, E_USER_WARNING);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Determine if translation exists for key.
+     *
+     * @param string      $key Translation key.
+     * @param string|null $lang
+     * @return bool
+     */
+    public function hasTranslation(string $key, string $lang = null): bool
+    {
+        $lang = $lang ?? $this->lang;
+        return isset($this->translations[$key][$lang]);
+    }
+
+    /**
+     * Get translation by key.
+     *
+     * @param string      $key Translation key.
+     * @param string|null $lang
+     * @return string
+     */
+    public function getTranslation(string $key, string $lang = null): string
+    {
+        $value = '';
+        $lang = $lang ?? $this->lang;
+
+        if ($this->hasTranslation($key, $lang)) {
+            $value = (string)$this->translations[$key][$lang];
+        }
+
+        return $value;
+    }
+
+    /**
+     * Determine if string ends with needle.
+     *
+     * @param string $haystack
+     * @param string $needle
+     * @return bool
+     */
+    private static function strEndsWith(string $haystack, string $needle): bool
+    {
+        $needle_len = strlen($needle);
+        return ($needle_len === 0 || 0 === substr_compare($haystack, $needle, - $needle_len));
     }
 }

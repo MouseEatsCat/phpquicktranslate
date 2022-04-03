@@ -6,7 +6,7 @@ Author: Michel Descoteaux (https://micheldescoteaux.com)
 GitHub: https://github.com/MouseEatsCat/phpquicktranslate
 */
 
-namespace MouseEatsCat\PhpQuickTranslate;
+namespace MouseEatsCat;
 
 use InvalidArgumentException;
 use RecursiveDirectoryIterator;
@@ -200,6 +200,8 @@ class PhpQuickTranslate
             $message = 'Failed to add translation source: ' . $e->getMessage();
             trigger_error($message, E_USER_WARNING);
         }
+
+        return $this;
     }
 
     /**
@@ -222,6 +224,10 @@ class PhpQuickTranslate
                             $translationKey
                         ));
                     }
+                    foreach ($translationVal as $langKey => $value) {
+                        $this->addTranslation($langKey, $translationKey, $value);
+                    }
+                } elseif (is_array($translationVal)) {
                     foreach ($translationVal as $langKey => $value) {
                         $this->addTranslation($langKey, $translationKey, $value);
                     }
@@ -280,5 +286,16 @@ class PhpQuickTranslate
     {
         $needle_len = strlen($needle);
         return ($needle_len === 0 || 0 === substr_compare($haystack, $needle, - $needle_len));
+    }
+
+    /**
+     * Clear all translations.
+     *
+     * @return $this
+     */
+    public function clearTranslations()
+    {
+        $this->translations = [];
+        return $this;
     }
 }

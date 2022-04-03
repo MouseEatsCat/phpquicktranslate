@@ -17,13 +17,15 @@ This script was developed as a personal project by [Michel Descoteaux](https://m
   ```php
   <?php
 
+  use MouseEatsCat\PhpQuickTranslate\PhpQuickTranslate;
+
   require_once __DIR__ . '/vendor/autoload.php';
 
   // Get the current language
   $lang = !empty($_GET['lang']) ? $_GET['lang']: 'en';
 
   // Instantiate PHP Quick Translate
-  $qt = new MouseEatsCat\PhpQuickTranslate($lang);
+  $qt = new PhpQuickTranslate($lang);
   ```
 
 You can optionally add a [mulilingal](#single-language-json-example) JSON translation file or multiple [single-language](#single-language-json-example) files.

@@ -6,7 +6,7 @@ Author: Michel Descoteaux (https://micheldescoteaux.com)
 GitHub: https://github.com/MouseEatsCat/phpquicktranslate
 */
 
-namespace MouseEatsCat;
+namespace MouseEatsCat\PhpQuickTranslate;
 
 use InvalidArgumentException;
 use RecursiveDirectoryIterator;

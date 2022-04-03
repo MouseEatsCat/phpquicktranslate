@@ -17,7 +17,7 @@ This script was developed as a personal project by [Michel Descoteaux](https://m
   ```php
   <?php
 
-  use MouseEatsCat\PhpQuickTranslate\PhpQuickTranslate;
+  use MouseEatsCat\PhpQuickTranslate;
 
   require_once __DIR__ . '/vendor/autoload.php';
 
@@ -49,17 +49,17 @@ $qt->et('translation_key');
 Assuming you have one json file for each language. Each file would contain something like this:
 ```json
 {
-	"translation_example": "Translated Text"
+  "translation_example": "Translated Text"
 }
 ```
 #### Multilingual JSON Example
 Assuming you have one json file containing all translations for all languages. The file would contain something like this:
 ```json
 {
-	"translation_example": {
-		"en": "English Translated Text",
-		"fr": "French Translated Text"
-	}
+  "translation_example": {
+    "en": "English Translated Text",
+    "fr": "French Translated Text"
+  }
 }
 ```
 ### Translating without translation files

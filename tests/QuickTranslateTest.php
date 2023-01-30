@@ -3,49 +3,46 @@
 namespace MouseEatsCat;
 
 use PHPUnit\Framework\TestCase;
-use MouseEatsCat\PhpQuickTranslate;
+use MouseEatsCat\QuickTranslate;
 
-class PhpQuickTranslateTest extends TestCase
+class QuickTranslateTest extends TestCase
 {
-    /** @var PhpQuickTranslate */
-    private $qt;
-
+    private QuickTranslate $qt;
     /** @var array */
-    private $langs;
-
-    private $resourceDir = __DIR__ . '/resources';
+    private array $langs;
+    private string $resourceDir = __DIR__ . '/resources';
 
     public function setUp(): void
     {
-        $this->qt = new PhpQuickTranslate();
+        $this->qt = new QuickTranslate();
         $this->langs = [
             'en' => 'English',
             'fr' => 'French',
         ];
     }
 
-    public function testSources()
+    public function testSources(): void
     {
         for ($i = 1; $i <= 2; $i++) {
             // multilingual
-            $this->qt->clearTranslations()->addTranslationSource("{$this->resourceDir}/multilingual/multilingual.json");
+            $this->qt->clearTranslations()->addTranslationSource("$this->resourceDir/multilingual/multilingual.json");
             $this->testLangs($this->langs, $i);
 
-            $this->qt->clearTranslations()->addTranslationSource("{$this->resourceDir}/multilingual/");
+            $this->qt->clearTranslations()->addTranslationSource("$this->resourceDir/multilingual/");
             $this->testLangs($this->langs, $i);
 
             // Single-language
-            $this->qt->clearTranslations()->addTranslationSource("{$this->resourceDir}/single/");
+            $this->qt->clearTranslations()->addTranslationSource("$this->resourceDir/single/");
             $this->testLangs($this->langs, $i);
 
             $this->qt->clearTranslations()
-                ->addTranslationSource("{$this->resourceDir}/single/en.json", 'en')
-                ->addTranslationSource("{$this->resourceDir}/single/fr.json", 'fr');
+                ->addTranslationSource("$this->resourceDir/single/en.json", 'en')
+                ->addTranslationSource("$this->resourceDir/single/fr.json", 'fr');
             $this->testLangs($this->langs, $i);
         }
     }
 
-    public function testArrays()
+    public function testArrays(): void
     {
         $translations = [
             "translation1" => [
@@ -68,7 +65,8 @@ class PhpQuickTranslateTest extends TestCase
 
         // Test multilingual
         $this->qt->clearTranslations()->addTranslations($translations);
-        for ($i = 1; $i <= count($translations); $i++) {
+        $translationCount = count($translations);
+        for ($i = 1; $i <= $translationCount; $i++) {
             $this->testLangs($this->langs, $i);
         }
 
@@ -76,12 +74,14 @@ class PhpQuickTranslateTest extends TestCase
         $this->qt->clearTranslations()
             ->addTranslations($translationsEn, 'en')
             ->addTranslations($translationsFr, 'fr');
-        for ($i = 1; $i <= count($translations); $i++) {
+
+        $translationCount = count($translations);
+        for ($i = 1; $i <= $translationCount; $i++) {
             $this->testLangs($this->langs, $i);
         }
     }
 
-    private function testLangs($langs, $translation_index)
+    private function testLangs($langs, $translation_index): void
     {
         foreach ($langs as $lang_key => $lang_val) {
             $this->assertEquals(
@@ -91,7 +91,7 @@ class PhpQuickTranslateTest extends TestCase
         }
     }
 
-    public function testTranslation()
+    public function testTranslation(): void
     {
         // Should return first
         $this->assertEquals('Hello', $this->qt->t('[:en]Hello'));
@@ -120,7 +120,7 @@ class PhpQuickTranslateTest extends TestCase
         $this->assertEquals('Hola', $this->qt->t('[:es]Hola[:fr]Bonjour'));
     }
 
-    public function testTranslationMultiple()
+    public function testTranslationMultiple(): void
     {
         // Should return en
         $this->assertEquals('Hello', $this->qt->t('[:es]Hola[:en]Hello[:fr]Bonjour'));
@@ -138,7 +138,7 @@ class PhpQuickTranslateTest extends TestCase
         ]));
     }
 
-    public function testTranslationChangeLang()
+    public function testTranslationChangeLang(): void
     {
         $this->assertEquals('Bonjour', $this->qt->setLang('fr')->t([
             'en' => 'Hello',
@@ -153,7 +153,7 @@ class PhpQuickTranslateTest extends TestCase
         ]));
     }
 
-    public function testOutput()
+    public function testOutput(): void
     {
         $this->expectOutputString('Bonjour');
 

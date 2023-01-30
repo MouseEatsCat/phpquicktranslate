@@ -7,7 +7,7 @@ This script was developed as a personal project by [Michel Descoteaux](https://m
 
 ## Requirements
 
-* PHP >= 7.4
+* PHP >= 8.0
 * Composer - [Install](https://getcomposer.org/download/)
 
 ## Installation
@@ -17,7 +17,7 @@ This script was developed as a personal project by [Michel Descoteaux](https://m
   ```php
   <?php
 
-  use MouseEatsCat\PhpQuickTranslate;
+  use MouseEatsCat\QuickTranslate;
 
   require_once __DIR__ . '/vendor/autoload.php';
 
@@ -25,7 +25,7 @@ This script was developed as a personal project by [Michel Descoteaux](https://m
   $lang = !empty($_GET['lang']) ? $_GET['lang']: 'en';
 
   // Instantiate PHP Quick Translate
-  $qt = new PhpQuickTranslate($lang);
+  $qt = new QuickTranslate($lang);
   ```
 
 You can optionally add a [mulilingal](#single-language-json-example) JSON translation file or multiple [single-language](#single-language-json-example) files.
@@ -83,10 +83,10 @@ If the url is `http://website.com/?lang=fr`, the result will be:
 French Text
 ```
 
-## PHPQuickTranslate Methods
+## QuickTranslate Methods
 ```php
 // Instantiate PHP Quick Translate
-$qt = new PHPQuickTranslate('lang');
+$qt = new QuickTranslate('lang');
 
 // Translate
 $qt->t('translation_key');

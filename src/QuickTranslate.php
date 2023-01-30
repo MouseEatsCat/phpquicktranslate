@@ -12,36 +12,30 @@ use InvalidArgumentException;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
-class PhpQuickTranslate
+class QuickTranslate
 {
-    /** @var string */
-    protected $lang;
-
-    /** @var bool */
-    protected $useFirstString;
-
-    /** @var array */
-    protected $translations = [];
+    protected string $language;
+    protected bool $useFirstString;
+    protected array $translations = [];
 
     /**
-     * Initialize PhpQuickTranslate
+     * Initialize QuickTranslate
      *
-     * @param string  $lang           Current Language
+     * @param string  $language           Current Language
      * @param bool    $useFirstString If no match is found, use first available translation
      */
-    public function __construct(string $lang = "en", bool $useFirstString = true)
+    public function __construct(string $language = "en", bool $useFirstString = true)
     {
-        $this->lang = !empty($lang) ? $lang : "en";
+        $this->language       = !empty($language) ? $language : "en";
         $this->useFirstString = $useFirstString;
     }
 
     /**
      * Translate string
      *
-     * @param string|array $translations String(s) you want to translate
-     * @return string
+     * @param array|string $translations String(s) you want to translate
      */
-    public function t($translations)
+    public function t(array|string $translations): array|string
     {
         if (is_string($translations)) {
             if ($this->hasTranslation($translations)) {
@@ -56,8 +50,8 @@ class PhpQuickTranslate
         }
 
         // Check to see if the current lang is set and is present in the string
-        if (!empty($this->lang) && !empty($translations[$this->lang])) {
-            return $translations[$this->lang];
+        if (!empty($this->language) && !empty($translations[$this->language])) {
+            return $translations[$this->language];
         }
 
         if ($this->useFirstString) {
@@ -72,9 +66,8 @@ class PhpQuickTranslate
      * Example: '[:en]English Text[:es]Texto en español'
      *
      * @param string $string
-     * @return array
      */
-    private function parseSubstringTranslations(string $string)
+    private function parseSubstringTranslations(string $string): array
     {
         $translations = [];
 
@@ -98,10 +91,9 @@ class PhpQuickTranslate
     /**
      * Translate and echo
      *
-     * @param string|array $translations String(s) you want to translate
-     * @return $this
+     * @param array|string $translations String(s) you want to translate
      */
-    public function et($translations)
+    public function et(array|string $translations): static
     {
         echo $this->t($translations);
         return $this;
@@ -109,37 +101,31 @@ class PhpQuickTranslate
 
     /**
      * Change current language
-     *
-     * @param string $lang
-     * @return $this
      */
-    public function setLang(string $lang)
+    public function setLanguage(string $language): static
     {
-        $this->lang = $lang;
+        $this->language = $language;
         return $this;
     }
 
     /**
      * Get current language
-     *
-     * @return string
      */
-    public function getLang()
+    public function getLanguage(): string
     {
-        return $this->lang;
+        return $this->language;
     }
 
     /**
      * Add a translation.
      *
-     * @param string $lang Language of the translation.
+     * @param string $language Language of the translation.
      * @param string $key Translation key.
      * @param string|null $value Translation value.
-     * @return $this
      */
-    public function addTranslation(string $lang, string $key, string $value = null)
+    public function addTranslation(string $language, string $key, ?string $value = null): static
     {
-        $this->translations[$key][$lang] = $value ?? $key;
+        $this->translations[$key][$language] = $value ?? $key;
         return $this;
     }
 
@@ -147,14 +133,13 @@ class PhpQuickTranslate
      * Add translation JSON source file or directory.
      *
      * @param string      $source   Path to JSON file containing translations OR directory
-     * @param string|null $lang     Language of translations
+     * @param string|null $language Language of translations
      *                              (Only required if translations don't contain language codes)
-     * @return $this
      *
      * @see https://github.com/MouseEatsCat/phpquicktranslate#single-language-json Single language json example.
      * @see https://github.com/MouseEatsCat/phpquicktranslate#multilingual-json Multilingual json example.
      */
-    public function addTranslationSource(string $source, string $lang = null)
+    public function addTranslationSource(string $source, ?string $language = null): static
     {
         $sources = [];
 
@@ -163,17 +148,17 @@ class PhpQuickTranslate
                 $it = new RecursiveDirectoryIterator($source);
 
                 foreach (new RecursiveIteratorIterator($it) as $file) {
-                    if ($file->getExtension() == 'json') {
+                    if ($file->getExtension() === 'json') {
                         $sources[] = [
                             'file' => $file->getRealPath(),
-                            'lang' => $lang ?? $file->getBasename('.json')
+                            'lang' => $language ?? $file->getBasename('.json')
                         ];
                     }
                 }
-            } elseif ($this::strEndsWith($source, '.json') && file_exists($source)) {
+            } elseif ($this::fileIsJson($source) && file_exists($source)) {
                 $sources = [[
                     'file' => $source,
-                    'lang' => $lang
+                    'lang' => $language
                 ]];
             } else {
                 throw new InvalidArgumentException(sprintf(
@@ -183,12 +168,12 @@ class PhpQuickTranslate
             }
 
             foreach ($sources as $src) {
-                $file = $src['file'];
-                $lang = strtolower($src['lang']);
+                $file         = $src['file'];
+                $language     = strtolower($src['lang']);
                 $translations = json_decode(file_get_contents($file), JSON_OBJECT_AS_ARRAY);
 
                 if ($translations) {
-                    $this->addTranslations($translations, $lang);
+                    $this->addTranslations($translations, $language);
                 } else {
                     throw new InvalidArgumentException(sprintf(
                         'Invalid JSON in: "%s"',
@@ -208,15 +193,14 @@ class PhpQuickTranslate
      * Add multiple translations.
      *
      * @param array       $translations  Array of translations to add
-     * @param string|null $lang          Language of translations
+     * @param string|null $language          Language of translations
      *                                   (Only required if translations don't contain language codes)
-     * @return $this
      */
-    public function addTranslations(array $translations, string $lang = null)
+    public function addTranslations(array $translations, ?string $language = null): static
     {
         try {
             foreach ($translations as $translationKey => $translationVal) {
-                if (empty($lang)) {
+                if (empty($language)) {
                     // Assume each translation is an array of [lang => value]
                     if (!is_array($translationVal)) {
                         throw new InvalidArgumentException(sprintf(
@@ -232,7 +216,7 @@ class PhpQuickTranslate
                         $this->addTranslation($langKey, $translationKey, $value);
                     }
                 } else {
-                    $this->addTranslation($lang, $translationKey, $translationVal);
+                    $this->addTranslation($language, $translationKey, $translationVal);
                 }
             }
         } catch (InvalidArgumentException $e) {
@@ -246,54 +230,45 @@ class PhpQuickTranslate
     /**
      * Determine if translation exists for key.
      *
-     * @param string      $key Translation key.
-     * @param string|null $lang
-     * @return bool
+     * @param string $key Translation key.
      */
-    public function hasTranslation(string $key, string $lang = null): bool
+    public function hasTranslation(string $key, ?string $language = null): bool
     {
-        $lang = $lang ?? $this->lang;
-        return isset($this->translations[$key][$lang]);
+        $language = $language ?? $this->language;
+        return isset($this->translations[$key][$language]);
     }
 
     /**
      * Get translation by key.
      *
      * @param string      $key Translation key.
-     * @param string|null $lang
-     * @return string
      */
-    public function getTranslation(string $key, string $lang = null): string
+    public function getTranslation(string $key, ?string $language = null): string
     {
         $value = '';
-        $lang = $lang ?? $this->lang;
+        $language  = $language ?? $this->language;
 
-        if ($this->hasTranslation($key, $lang)) {
-            $value = (string)$this->translations[$key][$lang];
+        if ($this->hasTranslation($key, $language)) {
+            $value = (string)$this->translations[$key][$language];
         }
 
         return $value;
     }
 
     /**
-     * Determine if string ends with needle.
-     *
-     * @param string $haystack
-     * @param string $needle
-     * @return bool
+     * Determine if file is json using it's extension.
      */
-    private static function strEndsWith(string $haystack, string $needle): bool
+    private static function fileIsJson(string $filePath): bool
     {
+        $needle     = '.json';
         $needle_len = strlen($needle);
-        return ($needle_len === 0 || 0 === substr_compare($haystack, $needle, - $needle_len));
+        return ($needle_len === 0 || 0 === substr_compare($filePath, $needle, - $needle_len));
     }
 
     /**
      * Clear all translations.
-     *
-     * @return $this
      */
-    public function clearTranslations()
+    public function clearTranslations(): static
     {
         $this->translations = [];
         return $this;

@@ -7,7 +7,7 @@ This script was developed as a personal project by [Michel Descoteaux](https://m
 
 ## Requirements
 
-* PHP >= 7.4
+* PHP >= 8.0
 * Composer - [Install](https://getcomposer.org/download/)
 
 ## Installation
@@ -17,15 +17,15 @@ This script was developed as a personal project by [Michel Descoteaux](https://m
   ```php
   <?php
 
-  use MouseEatsCat\PhpQuickTranslate;
+  use MouseEatsCat\QuickTranslate;
 
   require_once __DIR__ . '/vendor/autoload.php';
 
   // Get the current language
-  $lang = !empty($_GET['lang']) ? $_GET['lang']: 'en';
+  $language = !empty($_GET['language']) ? $_GET['language']: 'en';
 
   // Instantiate PHP Quick Translate
-  $qt = new PhpQuickTranslate($lang);
+  $qt = new QuickTranslate($language);
   ```
 
 You can optionally add a [mulilingal](#single-language-json-example) JSON translation file or multiple [single-language](#single-language-json-example) files.
@@ -74,19 +74,19 @@ $qt->et([
 
 $qt->et('[:en]English Text[:fr]French Text');
 ```
-If the url is `http://website.com/?lang=en` OR `http://website.com/`, the result will be:
+If the url is `http://website.com/?language=en` OR `http://website.com/`, the result will be:
 ```
 English Text
 ```
-If the url is `http://website.com/?lang=fr`, the result will be:
+If the url is `http://website.com/?language=fr`, the result will be:
 ```
 French Text
 ```
 
-## PHPQuickTranslate Methods
+## QuickTranslate Methods
 ```php
 // Instantiate PHP Quick Translate
-$qt = new PHPQuickTranslate('lang');
+$qt = new QuickTranslate('language');
 
 // Translate
 $qt->t('translation_key');
@@ -95,24 +95,24 @@ $qt->t('translation_key');
 $qt->et('translation_key');
 
 // Set the current language
-$qt->setLang('lang');
+$qt->setLanguage('language');
 
 // Get the current language
-$qt->getLang();
+$qt->getLanguage();
 
 // Add a translation
-$qt->addTranslation('lang', 'translation_key', 'translation_value');
+$qt->addTranslation('language', 'translation_key', 'translation_value');
 
 // Add a JSON translation source file directory
 // translation source file directory
 $qt->addTranslationSource('path/to/json/translations/');
 // Individual translation source file
-$qt->addTranslationSource('path/to/json/translations/lang.json', 'lang');
+$qt->addTranslationSource('path/to/json/translations/language.json', 'language');
 $qt->addTranslationSource('path/to/json/translations/multilingual.json');
 
 // Add array or translations
 // (single language + multilingual)
-$qt->addTranslations(['translation_key' => 'translation_value'], 'lang');
+$qt->addTranslations(['translation_key' => 'translation_value'], 'language');
 $qt->addTranslations([
   'translation_key' => [
     'en' => 'translation_value',
@@ -121,10 +121,10 @@ $qt->addTranslations([
 ]);
 
 // Determine if a translation exists for given key
-// If lang isn't provided, the current language will be used
-$qt->hasTranslation('translation_key', 'lang');
+// If language isn't provided, the current language will be used
+$qt->hasTranslation('translation_key', 'language');
 
 // Gets the translation for given key
-// If lang isn't provided, the current language will be used
-$qt->getTranslation('translation_key', 'lang');
+// If language isn't provided, the current language will be used
+$qt->getTranslation('translation_key', 'language');
 ```

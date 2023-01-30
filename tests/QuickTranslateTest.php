@@ -9,13 +9,13 @@ class QuickTranslateTest extends TestCase
 {
     private QuickTranslate $qt;
     /** @var array */
-    private array $langs;
+    private array $languages;
     private string $resourceDir = __DIR__ . '/resources';
 
     public function setUp(): void
     {
         $this->qt = new QuickTranslate();
-        $this->langs = [
+        $this->languages = [
             'en' => 'English',
             'fr' => 'French',
         ];
@@ -26,19 +26,19 @@ class QuickTranslateTest extends TestCase
         for ($i = 1; $i <= 2; $i++) {
             // multilingual
             $this->qt->clearTranslations()->addTranslationSource("$this->resourceDir/multilingual/multilingual.json");
-            $this->testLangs($this->langs, $i);
+            $this->testLanguages($this->languages, $i);
 
             $this->qt->clearTranslations()->addTranslationSource("$this->resourceDir/multilingual/");
-            $this->testLangs($this->langs, $i);
+            $this->testLanguages($this->languages, $i);
 
             // Single-language
             $this->qt->clearTranslations()->addTranslationSource("$this->resourceDir/single/");
-            $this->testLangs($this->langs, $i);
+            $this->testLanguages($this->languages, $i);
 
             $this->qt->clearTranslations()
                 ->addTranslationSource("$this->resourceDir/single/en.json", 'en')
                 ->addTranslationSource("$this->resourceDir/single/fr.json", 'fr');
-            $this->testLangs($this->langs, $i);
+            $this->testLanguages($this->languages, $i);
         }
     }
 
@@ -67,7 +67,7 @@ class QuickTranslateTest extends TestCase
         $this->qt->clearTranslations()->addTranslations($translations);
         $translationCount = count($translations);
         for ($i = 1; $i <= $translationCount; $i++) {
-            $this->testLangs($this->langs, $i);
+            $this->testLanguages($this->languages, $i);
         }
 
         // Test single-language
@@ -77,16 +77,16 @@ class QuickTranslateTest extends TestCase
 
         $translationCount = count($translations);
         for ($i = 1; $i <= $translationCount; $i++) {
-            $this->testLangs($this->langs, $i);
+            $this->testLanguages($this->languages, $i);
         }
     }
 
-    private function testLangs($langs, $translation_index): void
+    private function testLanguages($languages, $translation_index): void
     {
-        foreach ($langs as $lang_key => $lang_val) {
+        foreach ($languages as $lang_key => $lang_val) {
             $this->assertEquals(
                 "$lang_val Translation $translation_index",
-                $this->qt->setLang($lang_key)->t("translation$translation_index")
+                $this->qt->setLanguage($lang_key)->t("translation$translation_index")
             );
         }
     }
@@ -140,12 +140,12 @@ class QuickTranslateTest extends TestCase
 
     public function testTranslationChangeLang(): void
     {
-        $this->assertEquals('Bonjour', $this->qt->setLang('fr')->t([
+        $this->assertEquals('Bonjour', $this->qt->setLanguage('fr')->t([
             'en' => 'Hello',
             'fr' => 'Bonjour'
         ]));
 
-        $this->qt->setLang('es');
+        $this->qt->setLanguage('es');
 
         $this->assertEquals('Hola', $this->qt->t([
             'fr' => 'Bonjour',
@@ -158,7 +158,7 @@ class QuickTranslateTest extends TestCase
         $this->expectOutputString('Bonjour');
 
         $this->qt
-            ->setLang('fr')
+            ->setLanguage('fr')
             ->et([
                 'en' => 'Hello',
                 'fr' => 'Bonjour'
